@@ -98,15 +98,15 @@ public class RunGA {
 	
 		//Population pop= new Population(numberOfIndividuals,numberOfDecisionVariables, parameters.chromossome);
 		int coupleQuantity=getCoupleQuantity(crossOverRate,numberOfIndividuals);
-		Population pop = new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables, parameters.chromossome, coupleQuantity);
+		Population pop = new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables, coupleQuantity);
 		//Population pop= new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables, parameters.chromossome);
-		pop.generateInitialPopulation();
+		pop.generateInitialPopulation( parameters);
 		
 		pop.percent();
 		pop.Selection();
 		pop.print();
 		//pop.print1();
-		pop.crosover();
+		pop.crosover(parameters);
 		
 	}
 	/*Returns the number of couples that will be on crossover, this number will be used to create a matrix with index of the individuals which will be in the crossover function*/

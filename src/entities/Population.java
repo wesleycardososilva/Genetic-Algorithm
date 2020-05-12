@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.sun.jmx.remote.util.OrderClassLoaders;
+
+import core.Parameters;
 
 public class Population  {
 	
@@ -19,38 +22,19 @@ public class Population  {
 	private static int iterationNumber;
 	private int numberOfDecisionVariables;
 	public double populationFitnessSum;
-	public   Chromossomes chromossome;
+	//public   Chromossomes chromossome;
 	public int [] []matrixIndexCouple;
 	public int  coupleQuantity;
-	
-	
-
-	
-
-
 
 
 	public Population(Double crossOverRate, Double mutationRate, int populationSize, int numberOfDecisionVariables,
-			Chromossomes chromossome) {
+			 int coupleQuantity) {
 		super();
 		this.crossOverRate = crossOverRate;
 		this.mutationRate = mutationRate;
 		this.populationSize = populationSize;
 		this.numberOfDecisionVariables = numberOfDecisionVariables;
-		this.chromossome = chromossome;
-		this.matrixIndexCouple= new int [coupleQuantity][2];
-	}
-
-
-
-	public Population(Double crossOverRate, Double mutationRate, int populationSize, int numberOfDecisionVariables,
-			Chromossomes chromossome, int coupleQuantity) {
-		super();
-		this.crossOverRate = crossOverRate;
-		this.mutationRate = mutationRate;
-		this.populationSize = populationSize;
-		this.numberOfDecisionVariables = numberOfDecisionVariables;
-		this.chromossome = chromossome;
+		//this.chromossome = chromossome;
 		this.coupleQuantity = coupleQuantity;
 		this.matrixIndexCouple= new int [coupleQuantity][2];
 		this.population= population;
@@ -126,11 +110,12 @@ public class Population  {
 
 
 	/* Generate initial population using random numbers with their respective range defined by min and max constraint of each decision variables*/	
-	public void generateInitialPopulation() {
+	public void generateInitialPopulation(Parameters parameters) {
 		
 		for(int i =0; i<populationSize;i++) {
-			chromossome.setChromossomes(getRandomNumber());
-			IndividualPop individual = new IndividualPop(0.0,0.0, chromossome,i);					
+			Chromossomes c = new Chromossomes(numberOfDecisionVariables);
+			c.setChromossomes(getRandomNumber(parameters));
+			IndividualPop individual = new IndividualPop(0.0,0.0, c,i);					
 			individual.setFitnessValue(individual.fitness());//after calculate the fitness value we need the sum of all individuals fitness value,
 			populationFitnessSum=populationFitnessSum +individual.getFitnessValue(); //so we can calculate the percentual value of every individual, this value will be used in the Selection function(Roullete)					 
 			population.add(individual);	
@@ -142,11 +127,14 @@ public class Population  {
 		 
 	}
 	
-/*Generate a random number defined by the min and max constraints of the decision variables*/	
-	public double[] getRandomNumber() {
+/*Generate a random number defined by the min and max constraints of the current decision variable*/	
+	public double[] getRandomNumber(Parameters parameters) {
+		
 		double  decisionVariables[] = new double[numberOfDecisionVariables] ;//numberOfDecisionVariables
-		for(int i =0 ; i<chromossome.minConstraints.length;i++) {
-			decisionVariables[i]= (random.nextDouble()*chromossome.maxConstraints[i])+chromossome.minConstraints[i];
+		for(int i =0 ; i<numberOfDecisionVariables;i++) {
+			//decisionVariables[i]= random.nextDouble()*((parameters.chromossome.maxConstraints[i]-parameters.chromossome.minConstraints[i])+parameters.chromossome.minConstraints[i]);
+			decisionVariables[i]=ThreadLocalRandom.current().nextDouble(parameters.chromossome.minConstraints[i],parameters.chromossome.maxConstraints[i]);
+			System.out.printf("valor de aleatorio %f \n",decisionVariables[i] );
 		}
 		return (decisionVariables);		
 	}
@@ -154,12 +142,10 @@ public class Population  {
 /*Calculate the corresponding percentual value of the fitness of every individual  */
 	public void percent() {
 		for(Individual individual: population ) {  
-			individual.setFitnessPercent((individual.getFitnessValue()/populationFitnessSum));	
+			individual.setFitnessPercent((individual.getFitnessValue()/populationFitnessSum));
+			//System.out.printf("individuo %d valor de cromossomo %f\n", individual.getIndex(), individual.chromosomes.getChromossomeByposition(0));
 		}
-		Collections.sort(population);
-		//print();
-		//System.out.printf("primeiro da lista %f\n", population.get(0).chromosomes.getChromossomeByposition(0));
-		//System.out.printf("ultimo da lista %f\n", population.get(39).chromosomes.getChromossomeByposition(0));
+		//Collections.sort(population);
 	}
 /*Returns the number of couples that will be on crossover, this number will be used to create a matrix with index of the individuals which will be in the crossover function*/
 	/*public int prepareStructure(Double crossOverRate, int populationSize) {
@@ -191,11 +177,11 @@ public class Population  {
 		}
 	}
 	public void print1() {
-		IndividualPop individual = new IndividualPop(0.0,0.0, chromossome,0);
+		//IndividualPop individual = new IndividualPop(0.0,0.0, chromossome,0);
 		for(IndividualPop i : population) {
 			
-			int index=population.indexOf(individual);
-			System.out.printf("valor de index do arrayList %d \n",index);
+			//int index=population.indexOf(individual);
+			//System.out.printf("valor de index do arrayList %d \n",index);
 				//System.out.printf(" %f\n ",i.chromosomes.getChromossomeByposition(0) );
 				//System.out.printf(" valor de index%d\n ",i.getIndex() );
 				//System.out.printf("valor de percent %f\n ",i.getFitnessPercent());
@@ -207,119 +193,94 @@ public class Population  {
 /*Pick a random number and search for the corresponding individual*/	
 	public int roulete() {
 		double total=0, roulleteValue;
-		int j=0, lastIndividual=0;
+		int j=0, lastIndividual=0,k=0;
 		roulleteValue=random.nextDouble();//spin the wheel,the wheel is divided acordding  to the percentual of the individuals, 
-		for(Individual i : population) {//if there is an individual with 50% of the fitness somatorium, it will have half of the wheell as its range, so it will have 50% of chance.
 		
+		for(Individual i : population) {//if there is an individual with 50% of the fitness somatorium, it will have half of the wheell as its range, so it will have 50% of chance.
 			if(roulleteValue>=total) {//roulleteValue is compared to fitnessPercent, if its not in the range, total will acumulate the value in order to advance in the search for the winner
-				total=total+ i.getFitnessPercent();// total starts with 0, if the first element is the winner, it will picked in the second loop. 
+				total=total+ i.getFitnessPercent();// total starts with 0, if the first element is the winner, it will picked in the second loop.	
 			}else {
-				//System.out.printf(" valor de roulete %f:  ", roulleteValue);
-				//System.out.printf(" valor de index %d ", i.getIndex());
-				//System.out.printf(" valor de index %f\n ", i.getFitnessPercent());
-				return i.getIndex();	
+				
+				return k-1;	
 			}
-			lastIndividual= i.getIndex();
+			k++;
 		}
-		return lastIndividual;//Always wil be an individual that fits in the random number, if wasn't anyone of the others, so it's the last one. 
+		return k-1;//Always wil be an individual that fits in the random number, if wasn't anyone of the others, so it's the last one.
+		//return lastIndividual; 
 	}
 		
-	public void crosover() {
+	public void crosover(Parameters parameters) {
 		int end, begin;
-		int kcross= random.nextInt(numberOfDecisionVariables);
+		int kcross= random.nextInt(numberOfDecisionVariables);//random number used to defined which position of the array chromossomes, from the two parents, will be mixed. 
+		System.out.printf("valor do kcross %d\n", kcross);
 		//System.out.printf("valor de kcross %d", kcross);
 		int direction= random.nextInt(2);//there are two directions: from the begining to kcross, or from kcross to the end.
-		IndividualPop child1 = new IndividualPop(0.0, 0.0, chromossome, populationSize+1);
-		IndividualPop child2 = new IndividualPop(0.0, 0.0, chromossome, populationSize+1);
-		IndividualPop parent1 = new IndividualPop(0.0, 0.0, chromossome, populationSize+2);
-		IndividualPop parent2 = new IndividualPop(0.0, 0.0, chromossome, populationSize+3);
+		System.out.printf("valor de direction %d\n", direction);
 		
-		if(direction==1) {
-			end= numberOfDecisionVariables;
+		
+		if(direction==1) {//this direction is from the position pointed by kcros to the number of decision values, which is the last position of the array.
+			end= numberOfDecisionVariables;//2
 		    begin= kcross;
 		}else {
 			end= kcross;
 			begin=0;
 		}
-		for(int i =0; i< coupleQuantity;i++) {
-			for(int j=begin;j<end;j++) {
-				
-				for(IndividualPop indi:population) {
-					System.out.printf("**valor de cromossomo no for each %f %f valor do index %d\n ", indi.chromosomes.getChromossomeByposition(0),indi.chromosomes.getChromossomeByposition(0), indi.getIndex());
-				}
-				
-				IndividualPop ind = new IndividualPop(0.0, 0.0, chromossome, matrixIndexCouple[i][0]);
-				ind=population.get(i);
-				
-				System.out.printf("*****valor de matrixCouple dentro do for%d",matrixIndexCouple[i][0] );
-				System.out.printf("****valor do cromossomo no for de teste %f \n", ind.chromosomes.getChromossomeByposition(j));
-				//System.out.printf("valor de j dentro do for %d\n", j);
-				/*
-				parent1.chromosomes.setChromossomeByposition(j, (population.get(matrixIndexCouple[i][0]).chromosomes.getChromossomeByposition(j)*0.5));
-				parent2.chromosomes.setChromossomeByposition(j, (population.get(matrixIndexCouple[i][1]).chromosomes.getChromossomeByposition(j)*0.5));
-				child1.chromosomes.setChromossomeByposition(j, (parent1.chromosomes.getChromossomeByposition(j)+parent2.chromosomes.getChromossomeByposition(j)));
-				
-				IndividualPop ind = new IndividualPop(0.0, 0.0, chromossome, matrixIndexCouple[0][0]);
-				//ind=population.get(i);
-				ind=population.get(matrixIndexCouple[0][0]);
-				System.out.printf(" valor de i  %d\n ",i );
-				System.out.printf(" valor de cromossomo de parent1 %f  %f\n ",parent1.chromosomes.getChromossomeByposition(0),parent1.chromosomes.getChromossomeByposition(1) );
-				System.out.printf("valor do primeiro individuo: %d na lista %f\n",matrixIndexCouple[0][0], ind.chromosomes.getChromossomeByposition(j));
-				//System.out.printf(" valor de cromossomo do pai1 1 %f\n ",parent1.chromosomes.getChromossomeByposition(j) );
-				System.out.printf(" valor de cromossomo  %f\n ",ind.chromosomes.getChromossomeByposition(0) );
-				System.out.printf(" valor de cromossomo  %f\n ",ind.chromosomes.getChromossomeByposition(1) );
-				System.out.printf(" valor de index  %d\n ",ind.getIndex() );
-				
-				parent1.chromosomes.setChromossomeByposition(j, (population.get(matrixIndexCouple[i][0]).chromosomes.getChromossomeByposition(j)*0.9));
-				parent2.chromosomes.setChromossomeByposition(j, (population.get(matrixIndexCouple[i][1]).chromosomes.getChromossomeByposition(j)*0.1));
-				child2.chromosomes.setChromossomeByposition(j, (parent1.chromosomes.getChromossomeByposition(j)+parent2.chromosomes.getChromossomeByposition(j)));
-				*/
-			}
-			if(direction==0) {
-				for(int k =kcross;k< numberOfDecisionVariables; k++) {
-					//System.out.printf("valor de k dentro do for %d \n", k);
-					child1.chromosomes.setChromossomeByposition(k,population.get(matrixIndexCouple[i][0]).chromosomes.getChromossomeByposition(k));
-					child2.chromosomes.setChromossomeByposition(k, population.get(matrixIndexCouple[i][1]).chromosomes.getChromossomeByposition(k));
-				}
-			}else {
-				for(int m=0; m<kcross;m++) {
-					//System.out.printf("valor de k dentro do for %d \n", m);
-					child1.chromosomes.setChromossomeByposition(m,population.get(matrixIndexCouple[i][0]).chromosomes.getChromossomeByposition(m));
-					child2.chromosomes.setChromossomeByposition(m, population.get(matrixIndexCouple[i][1]).chromosomes.getChromossomeByposition(m));
-				}
-			}
-			child1.setIndex(this.populationSize+i);
-			child2.setIndex(this.populationSize+this.coupleQuantity+i);
+		
+		for(int i =0; i< coupleQuantity;i++) {//generate two childs per couple
+			makeChild(begin, end, direction, kcross, i);
+			makeChild2(begin, end, direction, kcross, i);
+		}
 			
-			population.add(child1);
-			IndividualPop indi = new IndividualPop(0.0, 0.0, chromossome, 0);
-			int index=population.indexOf(indi);
-			//System.out.printf("valor de index do filho 1 na lista %d \n",index);
-			population.add(child2);
+		for(IndividualPop i : population) {
+			System.out.printf("*** %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
 		}
 		
-		//System.out.println(population);
+	}
+/*makechild1 generate and add, to the population, a child with 50% of the first parent and 50% of the second parent from the matrixCouple  */	
+	public  void makeChild(int begin, int end,int direction, int kcross, int couple) {
+		double child[]=new double[numberOfDecisionVariables];
+		for(int j=begin;j<end;j++) {//access the selected positions of the chromossome array in order to get their values to mix with a chromossome at the same position of the another parent.
+			
+			child[j]=(population.get(matrixIndexCouple[couple][0]).chromosomes.getChromossomeByposition(j)*0.5)+(population.get(matrixIndexCouple[couple][1]).chromosomes.getChromossomeByposition(j)*0.5);				
+		}
+		if(direction==0) {// parts of the two parents are mixed, but the remain part of the child, which is empty yet, must have fulfilled with the chromossome of the parent from the first column of the matrixColumn.   
+			for(int k =kcross;k< numberOfDecisionVariables; k++) {
+				child[k]=population.get(matrixIndexCouple[couple][0]).chromosomes.getChromossomeByposition(k);
+			}
+		}else {
+			for(int m=0; m<kcross;m++) {
+					child[m]=population.get(matrixIndexCouple[couple][0]).chromosomes.getChromossomeByposition(m);
+				}
+			}
+		Chromossomes c= new Chromossomes();
+		IndividualPop i=new IndividualPop(0.0, 0.0, c, populationSize+couple);
+		i.chromosomes.setChromossomes(child);
+		System.out.printf("+++ valor de child %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
+		population.add(i);
 		
-		/*System.out.printf("valor do cromossomo 0 do pai 1 %f valor do cromossomo 1 do pai 1 %f\n", population.get(matrixIndexCouple[0][0]).chromosomes.getChromossomeByposition(0),population.get(matrixIndexCouple[0][0]).chromosomes.getChromossomeByposition(1));
-		System.out.printf("valor do cromossomo 0 do filho %f valor do cromossomo 1 do filho1 %f\n", population.get(50).chromosomes.getChromossomeByposition(0),population.get(50).chromosomes.getChromossomeByposition(1));
-		System.out.printf("valor do cromossomo 0 do pai 1 %f valor do cromossomo 1 do pai 1 %f\n", population.get(matrixIndexCouple[1][0]).chromosomes.getChromossomeByposition(0),population.get(matrixIndexCouple[1][0]).chromosomes.getChromossomeByposition(1));
-		System.out.printf("valor do cromossomo 0 do filho %f valor do cromossomo 1 do filho1 %f\n", population.get(51).chromosomes.getChromossomeByposition(0),population.get(51).chromosomes.getChromossomeByposition(1));
-		System.out.printf("valor do cromossomo 0 do individuo 0 %f valor do cromossomo 1do individuo 0 %f\n", population.get(0).chromosomes.getChromossomeByposition(0),population.get(51).chromosomes.getChromossomeByposition(1));
-		System.out.printf("valor do primeiro individuo %f",population.get(0).getChromosomes().getChromossomeByposition(0) );*/
 	}
-
-	
-	
-	@Override
-	public String toString() {
-		return "Population [chromossome=" + chromossome + ", toString()=" + super.toString() + "]";
+/*makeChild2 is alike to makeChild1, but generate childs with 90% of the first parent and 10% of the second */	
+	public void makeChild2(int begin, int end,int direction, int kcross, int couple) {
+		double child[]=new double[numberOfDecisionVariables];
+		for(int j=begin;j<end;j++) {
+			child[j]=(population.get(matrixIndexCouple[couple][0]).chromosomes.getChromossomeByposition(j)*0.9)+(population.get(matrixIndexCouple[couple][1]).chromosomes.getChromossomeByposition(j)*0.1);				
+		}
+		if(direction==0) {
+			for(int k =kcross;k< numberOfDecisionVariables; k++) {
+				child[k]=population.get(matrixIndexCouple[couple][1]).chromosomes.getChromossomeByposition(k);
+			}
+		}else {
+			for(int m=0; m<kcross;m++) {
+					child[m]=population.get(matrixIndexCouple[couple][1]).chromosomes.getChromossomeByposition(m);
+				}
+			}
+		Chromossomes c= new Chromossomes();
+		IndividualPop i=new IndividualPop(0.0, 0.0, c, populationSize+couple+coupleQuantity);
+		i.chromosomes.setChromossomes(child);
+		population.add(i);
+		
 	}
-
-
-
-
-
-
 	
+		
 	
 }

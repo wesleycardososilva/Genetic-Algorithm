@@ -2,7 +2,12 @@ package entities;
 
 public class IndividualPop extends Individual {
 
+	public IndividualPop() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
+	
 	public IndividualPop(Double fitnessValue, Double fitnessPercent, Chromossomes chromossomes, int index) {
 		super(fitnessValue, fitnessPercent, chromossomes, index);
 		// TODO Auto-generated constructor stub

@@ -7,6 +7,13 @@ public abstract class Individual implements Comparable <Individual>  {
 	private Double fitnessPercent;
 	private int index;
 	
+	
+	
+	public Individual() {
+		super();
+	}
+
+
 	public Individual( Double fitnessValue, Double fitnessPercent, Chromossomes chromossomes, int index) {
 		super();
 		this.fitnessValue = fitnessValue;
