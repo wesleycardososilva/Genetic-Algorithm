@@ -103,10 +103,14 @@ public class RunGA {
 		pop.generateInitialPopulation( parameters);
 		
 		pop.percent();
-		pop.Selection();
-		pop.print();
-		//pop.print1();
-		pop.crosover(parameters);
+		for(int i =0;i<800;i++) {
+			pop.Selection();
+			pop.crosover(parameters);
+			pop.mutation();
+			pop.nextGeneration();
+			pop.elitism();
+		}
+		
 		
 	}
 	/*Returns the number of couples that will be on crossover, this number will be used to create a matrix with index of the individuals which will be in the crossover function*/

@@ -65,7 +65,7 @@ public abstract class Individual implements Comparable <Individual>  {
 	@Override public int compareTo(Individual individual) { 
 		if (this.fitnessPercent < individual.getFitnessPercent()) { 
 			  return -1; 
-			  } if (this.fitnessPercent > individual.getFitnessPercent()) { 
+			  } if (this.fitnessValue > individual.getFitnessValue()) { //ascending order sort for minimization problem
 			  return 1; 
 			  } 
 		return 0;
@@ -75,9 +75,11 @@ public abstract class Individual implements Comparable <Individual>  {
 	
 
 	public double fitness() {
-		return(20+Math.pow(chromosomes.chromossomes[0], 2)+Math.pow(chromosomes.chromossomes[1], 2)-10*(Math.cos(chromosomes.chromossomes[0]*2*Math.PI+chromosomes.chromossomes[1]*2*Math.PI)));//The objective function must be placed here
+		double result;
+		result=(20+Math.pow(chromosomes.chromossomes[0], 2)+Math.pow(chromosomes.chromossomes[1], 2)-10*((Math.cos(chromosomes.chromossomes[0]*2*Math.PI)+(Math.cos(chromosomes.chromossomes[1]*2*Math.PI)))));//The objective function must be placed here
 		// fitnessValue will receive the result of the calculus of the objective function.
-		//use each position of the chromossome array as a decision variable of your objective function  
+		//use each position of the chromossome array as a decision variable of your objective function
+		return (result*(-1));//if its a minimization problema you must have multiply by -1
 	}	
 	
 

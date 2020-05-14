@@ -22,7 +22,6 @@ public class Population  {
 	private static int iterationNumber;
 	private int numberOfDecisionVariables;
 	public double populationFitnessSum;
-	//public   Chromossomes chromossome;
 	public int [] []matrixIndexCouple;
 	public int  coupleQuantity;
 
@@ -96,45 +95,30 @@ public class Population  {
 		this.populationFitnessSum = populationFitnessSum;
 	}
 	
-
-/*public int[][] getMatrixIndexCouple() {
-		return matrixIndexCouple;
-	}*/
-
-
-
-	/*public void setMatrixIndexCouple(int[][] matrixIndexCouple) {
-		this.matrixIndexCouple = matrixIndexCouple;
-	}*/
-
-
-
 	/* Generate initial population using random numbers with their respective range defined by min and max constraint of each decision variables*/	
 	public void generateInitialPopulation(Parameters parameters) {
 		
 		for(int i =0; i<populationSize;i++) {
 			Chromossomes c = new Chromossomes(numberOfDecisionVariables);
 			c.setChromossomes(getRandomNumber(parameters));
+			c.setMaxConstraints(parameters.chromossome.maxConstraints);
+			c.setMinConstraints(parameters.chromossome.getMinConstraints());
 			IndividualPop individual = new IndividualPop(0.0,0.0, c,i);					
 			individual.setFitnessValue(individual.fitness());//after calculate the fitness value we need the sum of all individuals fitness value,
 			populationFitnessSum=populationFitnessSum +individual.getFitnessValue(); //so we can calculate the percentual value of every individual, this value will be used in the Selection function(Roullete)					 
 			population.add(individual);	
-			int index=population.indexOf(individual);
-			System.out.printf("valor do cromossomo: %f %f do individuo %d  \n", individual.chromosomes.getChromossomeByposition(0),individual.chromosomes.getChromossomeByposition(1), individual.getIndex());
-			//System.out.printf("valor de fitness%.2f \n",individual.getFitnessValue());
-			
+			int index=population.indexOf(individual);		
 		}
 		 
 	}
 	
 /*Generate a random number defined by the min and max constraints of the current decision variable*/	
 	public double[] getRandomNumber(Parameters parameters) {
-		
 		double  decisionVariables[] = new double[numberOfDecisionVariables] ;//numberOfDecisionVariables
-		for(int i =0 ; i<numberOfDecisionVariables;i++) {
-			//decisionVariables[i]= random.nextDouble()*((parameters.chromossome.maxConstraints[i]-parameters.chromossome.minConstraints[i])+parameters.chromossome.minConstraints[i]);
+		IndividualPop ind = new IndividualPop();
+		for(int i =0 ; i<numberOfDecisionVariables;i++) {	
 			decisionVariables[i]=ThreadLocalRandom.current().nextDouble(parameters.chromossome.minConstraints[i],parameters.chromossome.maxConstraints[i]);
-			System.out.printf("valor de aleatorio %f \n",decisionVariables[i] );
+			//System.out.printf("valor de aleatorio %f \n",decisionVariables[i] );
 		}
 		return (decisionVariables);		
 	}
@@ -143,18 +127,10 @@ public class Population  {
 	public void percent() {
 		for(Individual individual: population ) {  
 			individual.setFitnessPercent((individual.getFitnessValue()/populationFitnessSum));
-			//System.out.printf("individuo %d valor de cromossomo %f\n", individual.getIndex(), individual.chromosomes.getChromossomeByposition(0));
 		}
 		//Collections.sort(population);
 	}
-/*Returns the number of couples that will be on crossover, this number will be used to create a matrix with index of the individuals which will be in the crossover function*/
-	/*public int prepareStructure(Double crossOverRate, int populationSize) {
-		int aux;
-		double result;
-		result= (crossOverRate * populationSize)/2;//calculate the number of couples that will be in crossover based on crossover rate 
-		aux= (int)Math.ceil(result);
-		return(aux);
-	}*/
+
 	/*Call the funciton roullete to select individuals, based on its fitness, in order to Fulfill one matrix with their index */
 	public void Selection() {
 		for(int i=0;i<coupleQuantity;i++) {
@@ -176,31 +152,18 @@ public class Population  {
 			System.out.println(" \n");
 		}
 	}
-	public void print1() {
-		//IndividualPop individual = new IndividualPop(0.0,0.0, chromossome,0);
-		for(IndividualPop i : population) {
-			
-			//int index=population.indexOf(individual);
-			//System.out.printf("valor de index do arrayList %d \n",index);
-				//System.out.printf(" %f\n ",i.chromosomes.getChromossomeByposition(0) );
-				//System.out.printf(" valor de index%d\n ",i.getIndex() );
-				//System.out.printf("valor de percent %f\n ",i.getFitnessPercent());
-			
-			
-		}
-	}
+
 /*Function used to make selection, generate a random number [0,1[ and check if there is an individual with a percentual value in that range */
 /*Pick a random number and search for the corresponding individual*/	
 	public int roulete() {
 		double total=0, roulleteValue;
-		int j=0, lastIndividual=0,k=0;
+		int k=0;
 		roulleteValue=random.nextDouble();//spin the wheel,the wheel is divided acordding  to the percentual of the individuals, 
 		
 		for(Individual i : population) {//if there is an individual with 50% of the fitness somatorium, it will have half of the wheell as its range, so it will have 50% of chance.
 			if(roulleteValue>=total) {//roulleteValue is compared to fitnessPercent, if its not in the range, total will acumulate the value in order to advance in the search for the winner
 				total=total+ i.getFitnessPercent();// total starts with 0, if the first element is the winner, it will picked in the second loop.	
-			}else {
-				
+			}else {	
 				return k-1;	
 			}
 			k++;
@@ -212,12 +175,10 @@ public class Population  {
 	public void crosover(Parameters parameters) {
 		int end, begin;
 		int kcross= random.nextInt(numberOfDecisionVariables);//random number used to defined which position of the array chromossomes, from the two parents, will be mixed. 
-		System.out.printf("valor do kcross %d\n", kcross);
+		//System.out.printf("valor do kcross %d\n", kcross);
 		//System.out.printf("valor de kcross %d", kcross);
 		int direction= random.nextInt(2);//there are two directions: from the begining to kcross, or from kcross to the end.
-		System.out.printf("valor de direction %d\n", direction);
-		
-		
+		//System.out.printf("valor de direction %d\n", direction);		
 		if(direction==1) {//this direction is from the position pointed by kcros to the number of decision values, which is the last position of the array.
 			end= numberOfDecisionVariables;//2
 		    begin= kcross;
@@ -227,17 +188,17 @@ public class Population  {
 		}
 		
 		for(int i =0; i< coupleQuantity;i++) {//generate two childs per couple
-			makeChild(begin, end, direction, kcross, i);
-			makeChild2(begin, end, direction, kcross, i);
+			makeChild(begin, end, direction, kcross, i,parameters);
+			makeChild2(begin, end, direction, kcross, i,parameters);
 		}
 			
-		for(IndividualPop i : population) {
-			System.out.printf("*** %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
-		}
+		//for(IndividualPop i : population) {
+			//System.out.printf("*** %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
+		//}
 		
 	}
 /*makechild1 generate and add, to the population, a child with 50% of the first parent and 50% of the second parent from the matrixCouple  */	
-	public  void makeChild(int begin, int end,int direction, int kcross, int couple) {
+	public  void makeChild(int begin, int end,int direction, int kcross, int couple, Parameters parameters) {
 		double child[]=new double[numberOfDecisionVariables];
 		for(int j=begin;j<end;j++) {//access the selected positions of the chromossome array in order to get their values to mix with a chromossome at the same position of the another parent.
 			
@@ -253,14 +214,16 @@ public class Population  {
 				}
 			}
 		Chromossomes c= new Chromossomes();
+		c.setMaxConstraints(parameters.chromossome.getMaxConstraints());
+		c.setMinConstraints(parameters.chromossome.getMinConstraints());
 		IndividualPop i=new IndividualPop(0.0, 0.0, c, populationSize+couple);
 		i.chromosomes.setChromossomes(child);
-		System.out.printf("+++ valor de child %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
+		//System.out.printf("+++ valor de child %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
 		population.add(i);
 		
 	}
 /*makeChild2 is alike to makeChild1, but generate childs with 90% of the first parent and 10% of the second */	
-	public void makeChild2(int begin, int end,int direction, int kcross, int couple) {
+	public void makeChild2(int begin, int end,int direction, int kcross, int couple,Parameters parameters) {
 		double child[]=new double[numberOfDecisionVariables];
 		for(int j=begin;j<end;j++) {
 			child[j]=(population.get(matrixIndexCouple[couple][0]).chromosomes.getChromossomeByposition(j)*0.9)+(population.get(matrixIndexCouple[couple][1]).chromosomes.getChromossomeByposition(j)*0.1);				
@@ -275,12 +238,101 @@ public class Population  {
 				}
 			}
 		Chromossomes c= new Chromossomes();
+		c.setMaxConstraints(parameters.chromossome.getMaxConstraints());
+		c.setMinConstraints(parameters.chromossome.getMinConstraints());
 		IndividualPop i=new IndividualPop(0.0, 0.0, c, populationSize+couple+coupleQuantity);
 		i.chromosomes.setChromossomes(child);
 		population.add(i);
 		
 	}
-	
+	/*There is a probability of mutation, if an individual has the chance to mutate ramdomly its chromossome will be choose and part of it will be changed, this change will be a sum of a random negative or positive number*/
+	public void mutation() {
+		double randomNumber;
+		for(int i=populationSize;i<population.size();i++) {
+			randomNumber=ThreadLocalRandom.current().nextDouble();
+			if(mutationRate>=randomNumber) {
+				getDirection(i);//this function define which chromossome will be mutaded and call the fuction mutateIndividual to do so
+			}
+		}
+	}
+	public void getDirection(int individualIndex) {
+		double beta ;
+		int signal,kmut, j,k, begin,end,direction;
+		kmut=ThreadLocalRandom.current().nextInt(numberOfDecisionVariables);		
+		direction=ThreadLocalRandom.current().nextInt(2);
+		if(direction==1) {
+			end = numberOfDecisionVariables;
+			begin = kmut;
+		}else {
+			end= kmut;
+			begin = 0;
+		}
+		signal=ThreadLocalRandom.current().nextInt(2);
+		if(signal==0) {//if signal is zero we have to sum a negative number to the chosen chromossome
+			signal=(-1);
+		}
+		beta=ThreadLocalRandom.current().nextDouble();
+		beta=beta*signal;
+		mutateIndividual(begin,end,beta, individualIndex);
+	}
+	public void mutateIndividual(int begin, int end,double beta, int individualIndex) {
+		double range=0, mutatedValue=0;
+		for(int i=begin; i<end;i++) {
+			range=population.get(individualIndex).chromosomes.maxConstraints[i]-population.get(individualIndex).chromosomes.minConstraints[i];
+			mutatedValue= range*0.05*beta;
+			population.get(individualIndex).chromosomes.setChromossomeByposition(i, (mutatedValue+population.get(individualIndex).chromosomes.getChromossomeByposition(i)));
+			if(population.get(individualIndex).chromosomes.getChromossomeByposition(i)>population.get(individualIndex).chromosomes.getMaxConstraints()[i]) {
+				population.get(individualIndex).chromosomes.setChromossomeByposition(i, population.get(individualIndex).chromosomes.maxConstraints[i]);
+			}
+			if(population.get(individualIndex).chromosomes.getChromossomeByposition(i)<population.get(individualIndex).chromosomes.getMinConstraints()[i]) {
+				population.get(individualIndex).chromosomes.setChromossomeByposition(i, population.get(individualIndex).chromosomes.getMinConstraints()[i]);
+			}
+			//System.out.printf("valor do cromossomo no individuo %f\n", population.get(individualIndex).chromosomes.getChromossomeByposition(i));		
+		}
+		//nextGeneration();
+	}
+	public void elitism() {
+		int index;
+		double bestfitness;
+		List<IndividualPop> newPop = new ArrayList();
+		//newPop=population;
+		for(IndividualPop i: population) {
+			newPop.add(i);			
+		}
+		Collections.sort(newPop);
+		population.clear();
+		
+		for(int i=0;i<populationSize;i++) {
+			if(i==0) {
+				//System.out.println("entrou no if do primeiro elemento");
+				population.add(i, newPop.get(i));
+			}else {
+				index=ThreadLocalRandom.current().nextInt(populationSize);
+				//index=(index*i)%population.size();
+				population.add(i, newPop.get(index));
+			}
+		}
+		System.out.printf("*+*+*valor de tamanho da populacao %d\n", population.size());
+		for(IndividualPop i : population) {
+			//System.out.printf("*** %f %f\n", i.chromosomes.getChromossomeByposition(0),i.chromosomes.getChromossomeByposition(1));
+			//System.out.printf("valor de fitness %f\n", i.getFitnessValue());
+		}
+		population.get(0).setFitnessValue(population.get(0).getFitnessValue()*-1);
+		System.out.printf("valor de fitness do primeiro elemento %f\n", population.get(0).getFitnessValue());
+		System.out.printf("valor de cromossomo do primeiro elemento %f %f\n", population.get(0).chromosomes.getChromossomeByposition(0),population.get(0).chromosomes.getChromossomeByposition(1));
+		//System.out.printf("valor de index do primeiro elemento %d", population.get(0).);
+		//return (bestfitness=population.get(0).getFitnessValue());
+	}
+	/*Preparing population to the next generation by calculating the fitness of the new individuals and seting their values of percent*/
+	public void nextGeneration() {
+		populationFitnessSum=0;
+		for(Individual i: population) {
+			i.setFitnessValue(i.fitness());
+			populationFitnessSum=populationFitnessSum+i.getFitnessValue();
+		}
+		percent();
+		//elitism();
+	}
 		
 	
 }

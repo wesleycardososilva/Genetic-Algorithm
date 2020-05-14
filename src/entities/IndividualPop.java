@@ -14,10 +14,12 @@ public class IndividualPop extends Individual {
 	}
 
 	public double fitness() {
-		
-		return(20+Math.pow(chromosomes.chromossomes[0], 2)+Math.pow(chromosomes.chromossomes[1], 2)-10*(Math.cos(chromosomes.chromossomes[0]*2*Math.PI+chromosomes.chromossomes[1]*2*Math.PI)));//The objective function must be placed here
+		double result;
+		result=(20+Math.pow(chromosomes.chromossomes[0], 2)+Math.pow(chromosomes.chromossomes[1], 2)-10*((Math.cos(chromosomes.chromossomes[0]*2*Math.PI)+(Math.cos(chromosomes.chromossomes[1]*2*Math.PI)))));//The objective function must be placed here
+		//result=(20+Math.pow(chromosomes.chromossomes[0], 2)+Math.pow(chromosomes.chromossomes[1], 2)-10*(Math.cos(chromosomes.chromossomes[0]*2*Math.PI+chromosomes.chromossomes[1]*2*Math.PI)));//The objective function must be placed here
 							// fitnessValue will receive the result of the calculus of the objective function.
 							//use each position of the chromossome array as a decision variable of your objective function 
+		return (result*(-1));//if its a minimization problem you must have multiply by -1
 	}
 
 	@Override
