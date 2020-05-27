@@ -16,7 +16,6 @@ public class Chromossomes {
 		
 	}
 	public Chromossomes() {
-		super();
 		
 	}
 	public double[] getChromossomes() {
@@ -46,16 +45,5 @@ public class Chromossomes {
 	public void  setChromossomeByposition(int index, double chromossomes) {
 		this.chromossomes[index]=chromossomes;
 	}
-	
-
-	/*public void fillConstraintsField(int numberOfDecisionVariables,double min, double max) {
-		for (int i=0;i<numberOfDecisionVariables;i++) {
-			constraints[i]= min;
-			constraints[i+1]= max;					
-					
-		}
-	}*/
-	
-	
 	
 }

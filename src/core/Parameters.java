@@ -9,11 +9,11 @@ import entities.Chromossomes;
 public class Parameters {
 	
 	private String path;
-	private   Integer numberOfIndividuals;
-	private   Double mutationRate;
-	private   Double crossOverRate;
-	private   Integer numberOfDecisionVariables;
-	private   Integer numberOfGenerations;
+	public   Integer numberOfIndividuals;
+	public   Double mutationRate;
+	public   Double crossOverRate;
+	public   Integer numberOfDecisionVariables;
+	public   Integer numberOfGenerations;
 	public   Chromossomes chromossome;
 	
 
@@ -77,7 +77,6 @@ public  void readFile() {
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 		String line = br.readLine();
-		//while (line != null) {
 			this.numberOfIndividuals= Integer.parseInt(line);
 			line = br.readLine();
 			this.mutationRate= Double.parseDouble(line);
@@ -91,34 +90,17 @@ public  void readFile() {
 			this.chromossome= new Chromossomes(numberOfDecisionVariables);
 			
 			
-			//while (line != null) {
-			for(int i =0 ; i<numberOfDecisionVariables;i++)	{
-				//System.out.printf("valor de i no comeco %d \n",i);
+			
+			for(int i =0 ; i<numberOfDecisionVariables;i++)	{				
 				this.chromossome.minConstraints[i]=Double.parseDouble(line);
-				//chromossome.minConstraints[i]= Double.parseDouble(line);
 				line = br.readLine();
-				//System.out.printf("valor da restricao %f \n",chromossome.minConstraints[i]);
 				this.chromossome.maxConstraints[i]= Double.parseDouble(line);
 				line = br.readLine();
-				//System.out.printf("valor da restricao %f \n",chromossome.maxConstraints[i]);
-				//System.out.printf("valor de i  %d \n",i);
-				
 			}
-			//this.minConstraint= Double.parseDouble(line);
-			//line = br.readLine();
-			//this.maxConstraint= Double.parseDouble(line);
-			//line = br.readLine();
 			
-		//}
 		} catch (IOException e) {
 		System.out.println("Error: " + e.getMessage());
 		}
 		
-	}
-
-
-	
-	
-	
-	
+	}	
 }

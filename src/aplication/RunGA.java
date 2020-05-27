@@ -1,7 +1,7 @@
 package aplication;
 
 import core.Parameters;
-import entities.Chromossomes;
+import entities.GA;
 import entities.Population;
 
 public class RunGA {
@@ -10,16 +10,9 @@ public class RunGA {
 	private   Double crossOverRate;
 	private   Integer numberOfDecisionVariables;
 	private   Integer numberOfGenerations;
-	
-	
-	
-
-
-
 
 	public RunGA(Integer numberOfIndividuals, Double mutationRate, Double crossOverRate,
 			Integer numberOfDecisionVariables, Integer numberOfGenerations) {
-		super();
 		this.numberOfIndividuals =numberOfIndividuals;
 		this.mutationRate = mutationRate;
 		this.crossOverRate = crossOverRate;
@@ -29,7 +22,6 @@ public class RunGA {
 	}
 
 	public RunGA() {
-		super();
 		
 	}
 
@@ -72,47 +64,27 @@ public class RunGA {
 	public void setNumberOfGenerations(Integer numberOfGenerations) {
 		this.numberOfGenerations = numberOfGenerations;
 	}
-
 	
-
-
-
-
-
-	// First way to start the GA
+/* GA starts here with a initial population created randomly based on its parameters */
 	
-	/*public RunGA(Integer numberOfIndividuals, Double mutationRate, Double crossOverRate,
-			Integer numberOfDecisionVariables, Integer numberOfGenerations, Chromossomes chromossome) {
-		super();
-		this.numberOfIndividuals = numberOfIndividuals;
-		this.mutationRate = mutationRate;
-		this.crossOverRate = crossOverRate;
-		this.numberOfDecisionVariables = numberOfDecisionVariables;
-		this.numberOfGenerations = numberOfGenerations;
-		this.chromossome = chromossome;
-	}*/
-
-	
-/*The GA starts here with a initial population created randmoly based on its parameters */
 	public void start(Parameters parameters) {
-	
-		//Population pop= new Population(numberOfIndividuals,numberOfDecisionVariables, parameters.chromossome);
-		int coupleQuantity=getCoupleQuantity(crossOverRate,numberOfIndividuals);
-		Population pop = new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables, coupleQuantity);
-		//Population pop= new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables, parameters.chromossome);
-		pop.generateInitialPopulation( parameters);
-		
-		pop.percent();
-		for(int i =0;i<800;i++) {
-			pop.Selection();
-			pop.crosover(parameters);
-			pop.mutation();
-			pop.nextGeneration();
-			pop.elitism();
+		int coupleQuantity = getCoupleQuantity(crossOverRate, numberOfIndividuals);
+		Population pop = new Population(crossOverRate, mutationRate, numberOfIndividuals, numberOfDecisionVariables,
+				coupleQuantity);
+		GA ga=new GA(parameters, coupleQuantity, pop);
+		ga.setPopulation();
+		ga.percent();
+		for (int i = 0; i <1100; i++) {
+			ga.Selection();
+			ga.crosover(parameters);
+			ga.mutation();
+			ga.nextGeneration();
+			ga.elitism();
+
 		}
-		
-		
 	}
+	
+	
 	/*Returns the number of couples that will be on crossover, this number will be used to create a matrix with index of the individuals which will be in the crossover function*/
 	public int getCoupleQuantity(Double crossOverRate, int populationSize) {
 		int aux;
@@ -120,7 +92,5 @@ public class RunGA {
 		result= (crossOverRate * numberOfIndividuals)/2;//calculate the number of couples that will be in crossover based on crossover rate, this is a given parameter of the GA in the Parameters file 
 		aux= (int)Math.ceil(result);
 		return(aux);		
-	}
-
-		
+	}		
 }
