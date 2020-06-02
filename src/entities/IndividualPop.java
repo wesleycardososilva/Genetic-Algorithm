@@ -71,8 +71,6 @@ public class IndividualPop implements Comparable <IndividualPop>  {
 	
 	
 	
-	
-	
 	@Override
 	public String toString() {
 		return "IndividualPop [chromosomes=" + chromosomes + ", fitness()=" + fitness() + ", getChromosomes()="

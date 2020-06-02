@@ -74,14 +74,15 @@ public class RunGA {
 		GA ga=new GA(parameters, coupleQuantity, pop);
 		ga.setPopulation();
 		ga.percent();
-		for (int i = 0; i <1100; i++) {
+		for (int i = 0; i <parameters.getNumberOfGenerations(); i++) {
 			ga.Selection();
 			ga.crosover(parameters);
 			ga.mutation();
 			ga.nextGeneration();
 			ga.elitism();
-
+			
 		}
+		parameters.writeResult(ga.getBestfitness(),ga.returnVariables());
 	}
 	
 	

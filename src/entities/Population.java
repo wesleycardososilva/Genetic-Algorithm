@@ -122,7 +122,6 @@ public class Population  {
 			populationFitnessSum=populationFitnessSum +individual.getFitnessValue(); //so we can calculate the percentual value of every individual, this value will be used in the Selection function(Roullete)					 
 			population.add(individual);	
 			int index=population.indexOf(individual);	
-			System.out.printf("valor do individuo gerado %f %f\n", individual.chromosomes.getChromossomeByposition(0),individual.chromosomes.getChromossomeByposition(1));
 		}
 		return this.population;
 		 
