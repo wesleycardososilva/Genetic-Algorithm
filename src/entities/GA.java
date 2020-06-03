@@ -71,7 +71,7 @@ public class GA {
 	
 	/*Calculate the corresponding percentual value of the fitness of every individual  */
 	public void percent() {
-		for(IndividualPop individual: this.population.getPopulation() ) {  
+		for(Individual individual: this.population.getPopulation() ) {  
 			individual.setFitnessPercent((individual.getFitnessValue()/population.populationFitnessSum));
 		}
 	}
@@ -95,10 +95,9 @@ public class GA {
 		int k = 0;
 		roulleteValue = random.nextDouble();// spin the wheel,the wheel is divided acordding to the percentual of the
 											// individuals,
-		for (IndividualPop i : this.population.getPopulation()) {
+		for (Individual i : this.population.getPopulation()) {
 																	
-			if (roulleteValue >= total) {// roulleteValue is compared to fitnessPercent, if its not in the range, total
-											// will acumulate the value in order to advance in the search for the winner
+			if (roulleteValue >= total) {
 				total = total + i.getFitnessPercent();
 			} else {
 				return k - 1;
@@ -158,7 +157,7 @@ public class GA {
 		Chromossomes c = new Chromossomes();
 		c.setMaxConstraints(parameters.chromossome.getMaxConstraints());
 		c.setMinConstraints(parameters.chromossome.getMinConstraints());
-		IndividualPop i = new IndividualPop(0.0, 0.0, c, parameters.getNumberOfIndividuals() + couple);
+		Individual i = new Individual(0.0, 0.0, c, parameters.getNumberOfIndividuals() + couple);
 		i.chromosomes.setChromossomes(child);
 		population.getPopulation().add(i);
 
@@ -188,7 +187,7 @@ public class GA {
 		Chromossomes c = new Chromossomes();
 		c.setMaxConstraints(parameters.chromossome.getMaxConstraints());
 		c.setMinConstraints(parameters.chromossome.getMinConstraints());
-		IndividualPop i = new IndividualPop(0.0, 0.0, c, parameters.getNumberOfIndividuals() + couple + coupleQuantity);
+		Individual i = new Individual(0.0, 0.0, c, parameters.getNumberOfIndividuals() + couple + coupleQuantity);
 		i.chromosomes.setChromossomes(child);
 		population.getPopulation().add(i);
 
@@ -253,8 +252,8 @@ public class GA {
 	public void elitism() {
 		int index;
 		//Double bestfitness;
-		List<IndividualPop> newPop = new ArrayList();
-		for (IndividualPop i : population.getPopulation()) {
+		List<Individual> newPop = new ArrayList();
+		for (Individual i : population.getPopulation()) {
 			newPop.add(i);
 		}
 		Collections.sort(newPop);
@@ -275,10 +274,9 @@ public class GA {
 		
 	public void nextGeneration() {
 		population.setPopulationFitnessSum(0);
-		for (IndividualPop i : population.getPopulation()) {
+		for (Individual i : population.getPopulation()) {
 			i.setFitnessValue(i.fitness());
 			population.setPopulationFitnessSum(population.getPopulationFitnessSum() + i.getFitnessValue());
-			//System.out.printf("valor de individuos %f %f\n", i.chromosomes.chromossomes[0],i.chromosomes.chromossomes[1] );
 		}
 		percent();
 	}

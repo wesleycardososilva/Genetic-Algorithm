@@ -15,7 +15,7 @@ public class Program {
 		parameters.setFile();
 		parameters.readFile();
 		RunGA run = new RunGA(parameters.getNumberOfIndividuals(),parameters.getMutationRate() ,parameters.getCrossOverRate(), parameters.getNumberOfDecisionVariables(),parameters.getNumberOfGenerations());
-		for(int i=0;i<3;i++) {
+		for(int i=0;i<1;i++) {
 			run.start(parameters);
 		}
 		parameters.setFile();

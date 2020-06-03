@@ -124,38 +124,8 @@ public void writeResult(double bestfitness,double []variables) {
 		System.out.println("Error: " + msg.getMessage());
 	}
 }
-/*Another way to read the parameters of the genetic algorithm whithout using json*/	
-public  void readFile2() {
-		
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-		String line = br.readLine();
-			this.numberOfIndividuals= Integer.parseInt(line);
-			line = br.readLine();
-			this.mutationRate= Double.parseDouble(line);
-			line = br.readLine();
-			this.crossOverRate= Double.parseDouble(line);
-			line = br.readLine();
-			this.numberOfDecisionVariables= Integer.parseInt(line);
-			line = br.readLine();
-			this.numberOfGenerations= Integer.parseInt(line);
-			line = br.readLine();
-			this.chromossome= new Chromossomes(numberOfDecisionVariables);
-			
-			
-			
-			for(int i =0 ; i<numberOfDecisionVariables;i++)	{				
-				this.chromossome.minConstraints[i]=Double.parseDouble(line);
-				line = br.readLine();
-				this.chromossome.maxConstraints[i]= Double.parseDouble(line);
-				line = br.readLine();
-			}
-			
-		} catch (IOException e) {
-		System.out.println("Error: " + e.getMessage());
-		}
-		
-	}
+	
+
 public  void readFile() {	
 	JSONParser jsonParser = new JSONParser();	
 	
@@ -186,5 +156,36 @@ public  void readFile() {
 	}
 	
 }
+/*Another way to read the parameters of the genetic algorithm whithout using json*/
+/*public  void readFile2() {
+
+	try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+	String line = br.readLine();
+		this.numberOfIndividuals= Integer.parseInt(line);
+		line = br.readLine();
+		this.mutationRate= Double.parseDouble(line);
+		line = br.readLine();
+		this.crossOverRate= Double.parseDouble(line);
+		line = br.readLine();
+		this.numberOfDecisionVariables= Integer.parseInt(line);
+		line = br.readLine();
+		this.numberOfGenerations= Integer.parseInt(line);
+		line = br.readLine();
+		this.chromossome= new Chromossomes(numberOfDecisionVariables);
+		
+		
+		
+		for(int i =0 ; i<numberOfDecisionVariables;i++)	{				
+			this.chromossome.minConstraints[i]=Double.parseDouble(line);
+			line = br.readLine();
+			this.chromossome.maxConstraints[i]= Double.parseDouble(line);
+			line = br.readLine();
+		}
+		
+	} catch (IOException e) {
+	System.out.println("Error: " + e.getMessage());
+	}
+	
+}*/
 
 }
